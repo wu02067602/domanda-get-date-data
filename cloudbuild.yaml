@@ -18,6 +18,8 @@ steps:
   args: ['push', '${_CI_REGISTRY_IMAGE}/${PROJECT_ID}/${_CI_REGISTRY_IMAGE_NAME}/${_CONTAINERNAME}:${COMMIT_SHA}']
 
 # Step 3: Deploy the Docker image to Cloud Run
+# 注意：記憶體從 512Mi 提升到 2Gi 以支援 YOLO+PaddleOCR 推論
+# 若要啟用 temp_feature OCR 功能，請設定環境變數 ENABLE_TEMP_FEATURE=1
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'gcloud'
   args: [
@@ -26,8 +28,8 @@ steps:
     '--platform', 'managed',
     '--region', '${_ZONE}',
     '--allow-unauthenticated',
-    '--memory', '512Mi',
-    '--cpu', '1',
+    '--memory', '2Gi',
+    '--cpu', '2',
     '--ingress', 'internal-and-cloud-load-balancing',
     '--max-instances', '1',
     '--min-instances', '0',
