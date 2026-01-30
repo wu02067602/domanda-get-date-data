@@ -1,0 +1,133 @@
+Global:
+  model_name: PP-OCRv3_server_rec_passport_date
+  debug: false
+  use_gpu: true
+  epoch_num: 200
+  log_smooth_window: 20
+  print_batch_step: 10
+  save_model_dir: C:/Users/wu020/Documents/data_lab/ocr/ocr_models/date/output
+  save_epoch_step: 40
+  eval_batch_step:
+  - 0
+  - 20
+  cal_metric_during_train: true
+  pretrained_model: C:/Users/wu020/Documents/data_lab/ocr/PaddleOCR/pretrain_models/ch_PP-OCRv3_rec_train/ch_PP-OCRv3_rec_train/best_accuracy
+  checkpoints: null
+  save_inference_dir: null
+  use_visualdl: false
+  infer_img: null
+  character_dict_path: C:/Users/wu020/Documents/data_lab/ocr/ocr_models_train_config/date/date_dict.txt
+  max_text_length: 15
+  infer_mode: false
+  use_space_char: true
+  distributed: false
+  save_res_path: ./output/predicts.txt
+  d2s_train_image_shape:
+  - 3
+  - 48
+  - 320
+Optimizer:
+  name: Adam
+  beta1: 0.9
+  beta2: 0.999
+  lr:
+    name: Cosine
+    learning_rate: 0.001
+    warmup_epoch: 2
+  regularizer:
+    name: L2
+    factor: 3.0e-05
+Architecture:
+  model_type: rec
+  algorithm: SVTR
+  Transform: null
+  Backbone:
+    name: MobileNetV1Enhance
+    scale: 0.5
+    last_conv_stride:
+    - 1
+    - 2
+    last_pool_type: avg
+  Head:
+    name: MultiHead
+    head_list:
+    - CTCHead:
+        Neck:
+          name: svtr
+          dims: 120
+          depth: 2
+          hidden_dims: 120
+          use_guide: true
+        Head:
+          fc_decay: 1.0e-05
+    - SARHead:
+        enc_dim: 512
+        max_text_length: 15
+Loss:
+  name: MultiLoss
+  loss_config_list:
+  - CTCLoss: null
+  - SARLoss: null
+PostProcess:
+  name: CTCLabelDecode
+Metric:
+  name: RecMetric
+  main_indicator: acc
+Train:
+  dataset:
+    name: SimpleDataSet
+    data_dir: C:/Users/wu020/Documents/data_lab/ocr/train_data/date/train
+    label_file_list:
+    - C:/Users/wu020/Documents/data_lab/ocr/train_data/date/train_label.txt
+    transforms:
+    - DecodeImage:
+        img_mode: BGR
+        channel_first: false
+    - RecAug: null
+    - MultiLabelEncode: null
+    - RecResizeImg:
+        image_shape:
+        - 3
+        - 48
+        - 320
+    - KeepKeys:
+        keep_keys:
+        - image
+        - label_ctc
+        - label_sar
+        - length
+        - valid_ratio
+  loader:
+    shuffle: true
+    batch_size_per_card: 16
+    drop_last: true
+    num_workers: 0
+Eval:
+  dataset:
+    name: SimpleDataSet
+    data_dir: C:/Users/wu020/Documents/data_lab/ocr/train_data/date/val
+    label_file_list:
+    - C:/Users/wu020/Documents/data_lab/ocr/train_data/date/val_label.txt
+    transforms:
+    - DecodeImage:
+        img_mode: BGR
+        channel_first: false
+    - MultiLabelEncode: null
+    - RecResizeImg:
+        image_shape:
+        - 3
+        - 48
+        - 320
+    - KeepKeys:
+        keep_keys:
+        - image
+        - label_ctc
+        - label_sar
+        - length
+        - valid_ratio
+  loader:
+    shuffle: false
+    drop_last: false
+    batch_size_per_card: 16
+    num_workers: 0
+profiler_options: null
