@@ -6,6 +6,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PORT=8080
 
+# 安裝系統依賴（OpenCV 和 PaddleOCR 需要）
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
 # 建立非 root 用戶以提高安全性
 RUN useradd -m -u 1000 appuser
 
@@ -21,6 +31,12 @@ COPY app.py .
 COPY date_calculator.py .
 COPY holiday_calculator.py .
 COPY interfaces.py .
+
+# 複製 temp_feature 模組（可插拔的 OCR Blueprint）
+COPY temp_feature/ temp_feature/
+
+# 複製 OCR 模型檔案
+COPY ocr_models/ ocr_models/
 
 # 更改所有檔案的擁有者為 appuser
 RUN chown -R appuser:appuser /app

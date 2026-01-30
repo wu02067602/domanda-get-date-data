@@ -1,0 +1,6 @@
+# 此目錄放置 PaddleOCR 推論用模型檔案
+# 需要的檔案：
+# - inference.pdmodel
+# - inference.pdiparams
+# - inference.pdiparams.info
+# - dict.txt

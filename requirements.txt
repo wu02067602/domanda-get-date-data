@@ -3,3 +3,13 @@ pytest==7.4.3
 pytest-flask==1.3.0
 requests==2.31.0
 gunicorn==21.2.0
+
+# OCR/YOLO 推論依賴（temp_feature 模組使用）
+# 注意：這些套件在啟用 ENABLE_TEMP_FEATURE=1 時才會實際使用
+paddlepaddle==2.6.1
+paddleocr==2.7.3
+ultralytics==8.2.0
+Pillow==10.2.0
+numpy==1.26.4
+PyYAML==6.0.1
+opencv-python-headless==4.9.0.80

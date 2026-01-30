@@ -344,7 +344,20 @@ def calculate_holiday_dates():
         return jsonify({"error": f"無法獲取節假日資料：{str(e)}"}), 500
 
 
+# 註冊 Temp Feature Blueprint（可選）
+# 透過環境變數 ENABLE_TEMP_FEATURE=1 啟用
+import os
+if os.environ.get('ENABLE_TEMP_FEATURE', '0') == '1':
+    try:
+        from temp_feature import bp as temp_feature_bp
+        app.register_blueprint(temp_feature_bp)
+        print("Temp Feature Blueprint 已啟用（/temp/*）")
+    except ImportError as e:
+        print(f"警告：無法載入 temp_feature 模組：{e}")
+    except Exception as e:
+        print(f"警告：註冊 temp_feature Blueprint 失敗：{e}")
+
+
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get('PORT', 8080))
     app.run(debug=True, host='0.0.0.0', port=port)
